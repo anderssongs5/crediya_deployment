@@ -1,0 +1,105 @@
+version: '3.9'
+
+services:
+  # Authentication Service with MySQL
+  authentication-sv:
+    image: ${AUTH_SERVICE_IMAGE:-authorization-sv:1.0.0}
+    container_name: authentication-sv
+    ports:
+      - "${AUTH_SERVICE_PORT:-8080}:${AUTH_SERVICE_PORT:-8080}"
+    environment:
+      - SERVER_PORT=${AUTH_SERVICE_PORT:-8080}
+      - DB_HOST=${MYSQL_DB_HOST}
+      - DB_PORT=${MYSQL_PORT:-3306}
+      - DB_DATABASE=${MYSQL_DATABASE}
+      - DB_SCHEMA=public
+      - DB_USERNAME=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+    depends_on:
+      authorization-mysql-db:
+        condition: service_healthy
+    networks:
+      - crediya-network
+    restart: unless-stopped
+
+  # MySQL Database for Authentication Service
+  authorization-mysql-db:
+    image: mysql:8.0
+    container_name: mysql-authorization-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_PORT:-3306}:${MYSQL_PORT:-3306}"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./scripts/auth-mysql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+      start_period: 40s
+    networks:
+      - crediya-network
+    restart: unless-stopped
+
+  # Loan Request Microservice with PostgreSQL
+  loan-request-sv:
+    image: ${LOAN_REQUEST_IMAGE:-loan-request-sv:1.0.0}
+    container_name: loan-request-sv
+    ports:
+      - "${LOAN_REQUEST_PORT:-8081}:${LOAN_REQUEST_PORT:-8081}"
+    environment:
+      - SERVER_PORT=${LOAN_REQUEST_PORT:-8081}
+      - DB_HOST=${POSTGRESQL_DB_HOST}
+      - DB_PORT=${POSTGRES_PORT:-5432}
+      - DB_DATABASE=${POSTGRES_DB}
+      - DB_SCHEMA=public
+      - DB_USERNAME=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - REST_CONSUMER_BASE_URL=http://authentication-sv:${AUTH_SERVICE_PORT:-8080}
+      - SECURITY_INTROSPECTION_BASE_URL=http://authentication-sv:${AUTH_SERVICE_PORT:-8080}
+    depends_on:
+      loan-request-postgresql-db:
+        condition: service_healthy
+    networks:
+      - crediya-network
+    restart: unless-stopped
+
+  # PostgreSQL Database for Request Loan Service
+  loan-request-postgresql-db:
+    image: postgres:17.6
+    container_name: postgres-loan-request-db
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/loan-request-postgresql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - crediya-network
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+    driver: local
+  postgres-data:
+    driver: local
+
+networks:
+  crediya-network:
+    driver: bridge
