@@ -1,5 +1,7 @@
 import json
 import boto3
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 def lambda_handler(event, context):
     sesClient = boto3.client('ses', region_name='us-east-1')
@@ -42,9 +44,14 @@ def lambda_handler(event, context):
         'body': 'Emails sent successfully'
     }
 
+
 def build_html_message(body):
     loan_request = body['loanRequest']
     user = body['user']
+
+    # Obtener hora local en Colombia
+    colombia_time = datetime.now(ZoneInfo("America/Bogota"))
+    formatted_time = colombia_time.strftime('%B %d, %Y at %I:%M %p')
 
     return f"""
         <html>
@@ -89,6 +96,11 @@ def build_html_message(body):
                         color: #e74c3c;
                         font-weight: bold;
                     }}
+                    .timestamp {{
+                        font-size: 14px;
+                        color: #7f8c8d;
+                        margin-top: 10px;
+                    }}
                     .footer {{
                         margin-top: 30px;
                         font-size: 14px;
@@ -107,6 +119,7 @@ def build_html_message(body):
                         (<b>{loan_request['loanType']['name']}</b>) has been 
                         <span class="highlight">{loan_request['status']['name']}</span>.<br><br>
                         If you have any questions or need further assistance, feel free to reach out to us.
+                        <div class="timestamp">Notification sent on: {formatted_time} (Colombia time)</div>
                     </div>
                     <div class="footer">
                         Best regards,<br>
