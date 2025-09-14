@@ -64,6 +64,9 @@ services:
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - REST_CONSUMER_BASE_URL=http://authentication-sv:${AUTH_SERVICE_PORT:-8080}
       - SECURITY_INTROSPECTION_BASE_URL=http://authentication-sv:${AUTH_SERVICE_PORT:-8080}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
     depends_on:
       loan-request-postgresql-db:
         condition: service_healthy

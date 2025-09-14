@@ -14,5 +14,3 @@ INSERT INTO loan_types (name, minimum_amount, maximum_amount, minimum_term, maxi
 ('BUSINESS_LOAN', 10000.00, 1000000.00, 12, 120, 0.1150, FALSE),
 ('STUDENT_LOAN', 500.00, 25000.00, 6, 120, 0.0650, TRUE),
 ('QUICK_LOAN', 100.00, 5000.00, 1, 12, 0.1850, TRUE);
-
-COMMIT;
