@@ -1,0 +1,121 @@
+{
+    "compatibilities": [
+        "EC2",
+        "MANAGED_INSTANCES",
+        "FARGATE"
+    ],
+    "containerDefinitions": [
+        {
+            "cpu": 0,
+            "environment": [
+                {
+                    "name": "SERVER_PORT",
+                    "value": "8082"
+                },
+                {
+                    "name": "AWS_REGION",
+                    "value": "us-east-1"
+                },
+                {
+                    "name": "AWS_ACCESS_KEY_ID",
+                    "value": "AKIA4THPDTZI2PMPSBNA"
+                },
+                {
+                    "name": "AWS_SECRET_ACCESS_KEY",
+                    "value": "/jOD8/H2/2WYczpuBo0iXxsqELEAZ28RdvW0Ej1J"
+                },
+                {
+                    "name": "SECURITY_INTROSPECTION_BASE_URL",
+                    "value": "http://internal-crediya-internal-alb-171105834.us-east-1.elb.amazonaws.com:8080"
+                }
+            ],
+            "environmentFiles": [],
+            "essential": true,
+            "healthCheck": {
+                "command": [
+                    "CMD-SHELL",
+                    "curl -f http://localhost:8082/actuator/health || exit 1"
+                ],
+                "interval": 20,
+                "retries": 3,
+                "startPeriod": 120,
+                "timeout": 30
+            },
+            "image": "865937366609.dkr.ecr.us-east-1.amazonaws.com/crediya/reports-sv:1.0.3",
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/reports-sv-task",
+                    "awslogs-create-group": "true",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "mountPoints": [],
+            "name": "reports-sv",
+            "portMappings": [
+                {
+                    "appProtocol": "http",
+                    "containerPort": 8082,
+                    "hostPort": 8082,
+                    "name": "reports-sv-2-8082-tcp",
+                    "protocol": "tcp"
+                }
+            ],
+            "systemControls": [],
+            "ulimits": [],
+            "volumesFrom": []
+        }
+    ],
+    "cpu": "1024",
+    "enableFaultInjection": false,
+    "executionRoleArn": "arn:aws:iam::865937366609:role/ecsTaskExecutionRole",
+    "family": "reports-sv-task",
+    "memory": "3072",
+    "networkMode": "awsvpc",
+    "placementConstraints": [],
+    "registeredAt": "2025-09-25T14:42:40.867Z",
+    "registeredBy": "arn:aws:iam::865937366609:root",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "ecs.capability.container-health-check"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "revision": 8,
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "status": "ACTIVE",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:865937366609:task-definition/reports-sv-task:8",
+    "volumes": [],
+    "tags": []
+}

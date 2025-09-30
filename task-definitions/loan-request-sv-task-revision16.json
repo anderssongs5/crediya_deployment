@@ -1,0 +1,154 @@
+{
+    "compatibilities": [
+        "EC2",
+        "FARGATE",
+        "MANAGED_INSTANCES"
+    ],
+    "containerDefinitions": [
+        {
+            "cpu": 0,
+            "environment": [
+                {
+                    "name": "SERVER_PORT",
+                    "value": "8081"
+                },
+                {
+                    "name": "AWS_REGION",
+                    "value": "us-east-1"
+                },
+                {
+                    "name": "DB_USERNAME",
+                    "value": "postgres"
+                },
+                {
+                    "name": "REST_CONSUMER_BASE_URL",
+                    "value": "http://internal-crediya-internal-alb-171105834.us-east-1.elb.amazonaws.com:8080"
+                },
+                {
+                    "name": "AWS_ACCESS_KEY_ID",
+                    "value": "AKIA4THPDTZI2PMPSBNA"
+                },
+                {
+                    "name": "DB_PORT",
+                    "value": "5432"
+                },
+                {
+                    "name": "AWS_SECRET_ACCESS_KEY",
+                    "value": "/jOD8/H2/2WYczpuBo0iXxsqELEAZ28RdvW0Ej1J"
+                },
+                {
+                    "name": "SECURITY_INTROSPECTION_BASE_URL",
+                    "value": "http://internal-crediya-internal-alb-171105834.us-east-1.elb.amazonaws.com:8080"
+                },
+                {
+                    "name": "DB_HOST",
+                    "value": "crediya-loan-request-db.cluwufromcoj.us-east-1.rds.amazonaws.com"
+                },
+                {
+                    "name": "DB_SCHEMA",
+                    "value": "public"
+                },
+                {
+                    "name": "DB_DATABASE",
+                    "value": "loan_request_db"
+                }
+            ],
+            "environmentFiles": [],
+            "essential": true,
+            "healthCheck": {
+                "command": [
+                    "CMD-SHELL",
+                    "curl -f http://localhost:8081/actuator/health || exit 1"
+                ],
+                "interval": 30,
+                "retries": 3,
+                "startPeriod": 180,
+                "timeout": 20
+            },
+            "image": "865937366609.dkr.ecr.us-east-1.amazonaws.com/crediya/loan-request-sv:1.0.8",
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/loan-request-sv-task",
+                    "awslogs-create-group": "true",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "mountPoints": [],
+            "name": "loan-request-sv",
+            "portMappings": [
+                {
+                    "appProtocol": "http",
+                    "containerPort": 8081,
+                    "hostPort": 8081,
+                    "name": "loan-request-sv-8081-tcp",
+                    "protocol": "tcp"
+                }
+            ],
+            "secrets": [
+                {
+                    "name": "DB_PASSWORD",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:865937366609:secret:rds!db-1f3d37c6-d351-466b-8703-45ec41d54f38-xZnRIP:password::"
+                }
+            ],
+            "systemControls": [],
+            "ulimits": [],
+            "volumesFrom": []
+        }
+    ],
+    "cpu": "1024",
+    "enableFaultInjection": false,
+    "executionRoleArn": "arn:aws:iam::865937366609:role/ecsTaskExecutionRole",
+    "family": "loan-request-sv-task",
+    "memory": "3072",
+    "networkMode": "awsvpc",
+    "placementConstraints": [],
+    "registeredAt": "2025-09-24T20:54:31.161Z",
+    "registeredBy": "arn:aws:iam::865937366609:root",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "ecs.capability.secrets.asm.environment-variables"
+        },
+        {
+            "name": "ecs.capability.container-health-check"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "revision": 16,
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "status": "ACTIVE",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:865937366609:task-definition/loan-request-sv-task:16",
+    "volumes": [],
+    "tags": []
+}
